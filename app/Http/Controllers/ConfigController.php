@@ -60,34 +60,34 @@ class ConfigController extends Controller
 
         // Create a new config...
         $config = Config::create([
-            'given_name'             => $givenName,
-            'stream_name'            => $streamName,
+            'given_name'  => $givenName,
+            'stream_name' => $streamName,
 
-            'rtmp_app_name'          => $rtmpAppName,
-            'rtmp_url'               => $rtmpUrl,
-            'rtmp_server_directory'  => $rtmpServerDirectory,
+            'rtmp_app_name'              => $rtmpAppName,
+            'rtmp_url'                   => $rtmpUrl,
+            'rtmp_server_directory'      => $rtmpServerDirectory,
             'rtmp_server_file_directory' => $rtmpServerFileDirectory,
 
-            'hls_server_name'        => $hlsServerName,
-            'hls_url'                => $hlsUrl,
-            'hls_server_directory'   => $hlsServerDirectory,
+            'hls_server_name'           => $hlsServerName,
+            'hls_url'                   => $hlsUrl,
+            'hls_server_directory'      => $hlsServerDirectory,
             'hls_server_file_directory' => $hlsServerFileDirectory,
 
-            'lua_directory'          => $luaDirectory,
-            'lua_hls_file_directory' => $luaHlsFileDirectory,
+            'lua_directory'           => $luaDirectory,
+            'lua_hls_file_directory'  => $luaHlsFileDirectory,
             'lua_stat_file_directory' => $luaStatFileDirectory,
 
-            'source_url'             => $sourceUrl,
+            'source_url' => $sourceUrl,
 
-            'm3u8_directory'         => $m3u8Directory,
-            'm3u8_file_directory'    => $m3u8FileDirectory,
-            'm3u8_log_directory'     => $m3u8LogDirectory,
+            'm3u8_directory'      => $m3u8Directory,
+            'm3u8_file_directory' => $m3u8FileDirectory,
+            'm3u8_log_directory'  => $m3u8LogDirectory,
 
             'access_log_directory'    => $accessLogDirectory,
             'error_log_directory'     => $errorLogDirectory,
             'bandwidth_log_directory' => $bandwidthLogDirectory,
 
-            'ffmpeg_cmd'             => $ffmpegCmd,
+            'ffmpeg_cmd' => $ffmpegCmd,
         ]);
 
         if ($config) {
