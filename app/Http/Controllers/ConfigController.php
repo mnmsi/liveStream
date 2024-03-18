@@ -23,7 +23,7 @@ class ConfigController extends Controller
         // Validate the request...
         $request->validate([
             'given_name' => 'required',
-            'source_url' => 'required|active_url',
+            'source_url' => 'required',
         ]);
 
         // get the server ip address
