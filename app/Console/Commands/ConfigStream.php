@@ -174,7 +174,7 @@ class ConfigStream extends Command
 
             // Reload Nginx
             exec('/usr/local/nginx/sbin/nginx -s reload');
-            echo "Nginx configuration reloaded successfully.";
+            Log::channel('stream')->info('Nginx configuration syntax check passed and Nginx reloaded successfully.');
         }
         else {
             Log::channel('stream')->error('Nginx configuration syntax check failed!');
