@@ -40,7 +40,7 @@ return new class extends Migration {
             $table->string('bandwidth_log_directory')->nullable();
 
             $table->string('ffmpeg_cmd')->nullable();
-            $table->string('ffmpeg_pid')->nullable();
+            $table->string('ffmpeg_kill_command')->nullable();
 
             $table->string('status')->default(0);
 

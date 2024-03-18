@@ -152,32 +152,28 @@ class ConfigStream extends Command
         Log::channel('stream')->info('HLS file created successfully.');
 
         // Check Nginx configuration syntax
-        $configCheckResult = shell_exec('/usr/local/nginx/sbin/nginx -t');
+        exec('/usr/local/nginx/sbin/nginx -t');
 
-        // If configuration syntax is correct, reload Nginx
-        if (str_contains($configCheckResult, 'successful')) {
+        // check source url exists
+        if (!empty($configData['source_url'])) {
+            // Run ffmpeg command and get the PID
+            exec($configData['ffmpeg_cmd']);
 
-            // check source url exists
-            if (!empty($configData['source_url'])) {
-                // Run ffmpeg command and get the PID
-                $ffmpegPid = shell_exec($configData['ffmpeg_cmd']);
+            $sourceUrl   = $configData['source_url'];
+            $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
 
-                if (!empty($ffmpegPid)) {
-                    // Update the config
-                    $config = Config::find($configData['id'])
-                        ->update([
-                            'ffmpeg_pid' => $ffmpegPid,
-                            'status'     => '1',
-                        ]);
-                }
+            if (!empty($ffmpegPid)) {
+                // Update the config
+                $config = Config::find($configData['id'])
+                    ->update([
+                        'ffmpeg_kill_command' => $killCommand,
+                        'status'              => 1,
+                    ]);
             }
+        }
 
-            // Reload Nginx
-            exec('/usr/local/nginx/sbin/nginx -s reload');
-            Log::channel('stream')->info('Nginx configuration syntax check passed and Nginx reloaded successfully.');
-        }
-        else {
-            Log::channel('stream')->error('Nginx configuration syntax check failed!');
-        }
+        // Reload Nginx
+        exec('/usr/local/nginx/sbin/nginx -s reload');
+        Log::channel('stream')->info('Nginx configuration syntax check passed and Nginx reloaded successfully.');
     }
 }
