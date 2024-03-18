@@ -34,12 +34,15 @@ class ConfigController extends Controller
 
         $rtmpAppName             = $streamName;
         $rtmpUrl                 = "rtmp://$serverIp/$givenName";
+        $rtmpServerDirectory     = "/usr/local/nginx/rtmp.d";
         $rtmpServerFileDirectory = "/usr/local/nginx/rtmp.d/$streamName.conf";
 
         $hlsServerName          = $streamName;
         $hlsUrl                 = "http://$serverIp/$givenName/stream.m3u8";
+        $hlsServerDirectory     = "/usr/local/nginx/html.d";
         $hlsServerFileDirectory = "/usr/local/nginx/html.d/$streamName.conf";
 
+        $luaDirectory         = "/usr/local/nginx/lua.d";
         $luaHlsFileDirectory  = "/usr/local/nginx/lua.d/$streamName" . "_hls.lua";
         $luaStatFileDirectory = "/usr/local/nginx/lua.d/$streamName" . "_stat.lua";
 
@@ -57,31 +60,31 @@ class ConfigController extends Controller
 
         // Create a new config...
         $config = Config::create([
-            'given_name'                 => $givenName,
-            'stream_name'                => $streamName,
+            'given_name'  => $givenName,
+            'stream_name' => $streamName,
 
             'rtmp_app_name'              => $rtmpAppName,
             'rtmp_url'                   => $rtmpUrl,
             'rtmp_server_file_directory' => $rtmpServerFileDirectory,
 
-            'hls_server_name'            => $hlsServerName,
-            'hls_url'                    => $hlsUrl,
-            'hls_server_file_directory'  => $hlsServerFileDirectory,
+            'hls_server_name'           => $hlsServerName,
+            'hls_url'                   => $hlsUrl,
+            'hls_server_file_directory' => $hlsServerFileDirectory,
 
-            'lua_hls_file_directory'     => $luaHlsFileDirectory,
-            'lua_stat_file_directory'    => $luaStatFileDirectory,
+            'lua_hls_file_directory'  => $luaHlsFileDirectory,
+            'lua_stat_file_directory' => $luaStatFileDirectory,
 
-            'source_url'                 => $sourceUrl,
+            'source_url' => $sourceUrl,
 
-            'm3u8_directory'             => $m3u8Directory,
-            'm3u8_file_directory'        => $m3u8FileDirectory,
-            'm3u8_log_directory'         => $m3u8LogDirectory,
+            'm3u8_directory'      => $m3u8Directory,
+            'm3u8_file_directory' => $m3u8FileDirectory,
+            'm3u8_log_directory'  => $m3u8LogDirectory,
 
-            'access_log_directory'       => $accessLogDirectory,
-            'error_log_directory'        => $errorLogDirectory,
-            'bandwidth_log_directory'    => $bandwidthLogDirectory,
+            'access_log_directory'    => $accessLogDirectory,
+            'error_log_directory'     => $errorLogDirectory,
+            'bandwidth_log_directory' => $bandwidthLogDirectory,
 
-            'ffmpeg_cmd'                 => $ffmpegCmd,
+            'ffmpeg_cmd' => $ffmpegCmd,
         ]);
 
         if ($config) {
