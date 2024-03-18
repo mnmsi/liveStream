@@ -13,7 +13,7 @@ class ConfigStream extends Command
      *
      * @var string
      */
-    protected $signature = 'config:stream';
+    protected $signature = 'config:stream {configData}';
 
     /**
      * The console command description.

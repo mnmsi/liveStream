@@ -86,7 +86,7 @@ class ConfigController extends Controller
 
         if ($config) {
             // Run config:stream command in the background
-            Artisan::call('config:stream', $config->toArray());
+            Artisan::call('config:stream', ['configData' => $config->toArray()]);
 
             return redirect()
                 ->route('config.list')
