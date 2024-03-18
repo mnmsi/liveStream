@@ -34,17 +34,17 @@ class ConfigController extends Controller
 
         $rtmpAppName             = $streamName;
         $rtmpUrl                 = "rtmp://$serverIp/$givenName";
-        $rtmpServerDirectory     = "/usr/local/nginx/rtmp.d";
-        $rtmpServerFileDirectory = "/usr/local/nginx/rtmp.d/$streamName.conf";
+        $rtmpServerDirectory     = "/usr/local/nginx/conf/rtmp.d";
+        $rtmpServerFileDirectory = "/usr/local/nginx/conf/rtmp.d/$streamName.conf";
 
         $hlsServerName          = $streamName;
         $hlsUrl                 = "http://$serverIp/$givenName/stream.m3u8";
-        $hlsServerDirectory     = "/usr/local/nginx/html.d";
-        $hlsServerFileDirectory = "/usr/local/nginx/html.d/$streamName.conf";
+        $hlsServerDirectory     = "/usr/local/nginx/conf/http.d";
+        $hlsServerFileDirectory = "/usr/local/nginx/conf/http.d/$streamName.conf";
 
-        $luaDirectory         = "/usr/local/nginx/lua.d";
-        $luaHlsFileDirectory  = "/usr/local/nginx/lua.d/$streamName" . "_hls.lua";
-        $luaStatFileDirectory = "/usr/local/nginx/lua.d/$streamName" . "_stat.lua";
+        $luaDirectory         = "/usr/local/nginx/conf/lua.d";
+        $luaHlsFileDirectory  = "/usr/local/nginx/conf/lua.d/$streamName" . "_hls.lua";
+        $luaStatFileDirectory = "/usr/local/nginx/conf/lua.d/$streamName" . "_stat.lua";
 
         $sourceUrl = $request->source_url;
 
