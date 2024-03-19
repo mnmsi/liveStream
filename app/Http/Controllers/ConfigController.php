@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Redis;
 
 class ConfigController extends Controller
 {
@@ -66,10 +67,13 @@ class ConfigController extends Controller
                             $stop
                         </div>";
 
+                // get active users count from redis
+                $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
+
                 return [
                     'id'                 => $config->id,
                     'info'               => $info,
-                    'active_users'       => 0,
+                    'active_users'       => count($activeUsers),
                     'incoming_bandwidth' => '0 MB',
                     'outgoing_bandwidth' => '0 MB',
                     'status'             => $status,
