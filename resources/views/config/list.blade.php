@@ -51,7 +51,7 @@
                         }
                     },
                     {data: 'info', name: 'info'},
-                    {data: 'active_users', name: 'active_users'},
+                    {data: 'active_users', name: 'active_users', className: 'text-center'},
                     {data: 'incoming_bandwidth', name: 'incoming_bandwidth'},
                     {data: 'outgoing_bandwidth', name: 'outgoing_bandwidth'},
                     {data: 'status', name: 'status', className: 'text-center'},
