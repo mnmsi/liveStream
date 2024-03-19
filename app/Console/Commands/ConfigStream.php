@@ -27,7 +27,7 @@ class ConfigStream extends Command
      */
     public function handle()
     {
-        Log::channel('stream')->info('Configuring the stream...');
+        Log::channel('stream')->info($configData['stream_name'] . ': Configuring the stream...');
 
         // Access the passed data
         $configData = $this->argument('configData');
@@ -38,7 +38,7 @@ class ConfigStream extends Command
             chmod($configData['m3u8_directory'], 0755);
         }
 
-        Log::channel('stream')->info('M3U8 directory created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': M3U8 directory created successfully.');
 
         // check rtmp directory
         if (!file_exists($configData['rtmp_server_directory'])) {
@@ -46,7 +46,7 @@ class ConfigStream extends Command
             chmod($configData['rtmp_server_directory'], 0755);
         }
 
-        Log::channel('stream')->info('RTMP directory created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': RTMP directory created successfully.');
 
         // check rtmp file
         if (!file_exists($configData['rtmp_server_file_directory'])) {
@@ -67,7 +67,7 @@ class ConfigStream extends Command
             chmod($configData['rtmp_server_file_directory'], 0755);
         }
 
-        Log::channel('stream')->info('RTMP file created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': RTMP file created successfully.');
 
         // check lua directory
         if (!file_exists($configData['lua_directory'])) {
@@ -75,7 +75,7 @@ class ConfigStream extends Command
             chmod($configData['lua_directory'], 0755);
         }
 
-        Log::channel('stream')->info('Lua directory created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': Lua directory created successfully.');
 
         // check lua hls file
         if (!file_exists($configData['lua_hls_file_directory'])) {
@@ -95,7 +95,7 @@ class ConfigStream extends Command
             chmod($configData['lua_hls_file_directory'], 0755);
         }
 
-        Log::channel('stream')->info('Lua HLS file created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': Lua HLS file created successfully.');
 
         // check lua stat file
         if (!file_exists($configData['lua_stat_file_directory'])) {
@@ -115,7 +115,7 @@ class ConfigStream extends Command
             chmod($configData['lua_stat_file_directory'], 0755);
         }
 
-        Log::channel('stream')->info('Lua stat file created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': Lua stat file created successfully.');
 
         // check hls directory
         if (!file_exists($configData['hls_server_directory'])) {
@@ -123,7 +123,7 @@ class ConfigStream extends Command
             chmod($configData['hls_server_directory'], 0755);
         }
 
-        Log::channel('stream')->info('HLS directory created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': HLS directory created successfully.');
 
         // check hls file
         if (!file_exists($configData['hls_server_file_directory'])) {
@@ -149,17 +149,17 @@ class ConfigStream extends Command
             chmod($configData['hls_server_file_directory'], 0755);
         }
 
-        Log::channel('stream')->info('HLS file created successfully.');
+        Log::channel('stream')->info($configData['stream_name'] . ': HLS file created successfully.');
 
         // Check Nginx configuration syntax
-        exec('/usr/local/nginx/sbin/nginx -t');
+        //exec('/usr/local/nginx/sbin/nginx -t');
 
         // check source url exists
         if (!empty($configData['source_url'])) {
             // Run ffmpeg command and get the PID
             exec($configData['ffmpeg_cmd']);
 
-            Log::channel('stream')->info('FFMPEG command executed successfully.');
+            Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG command executed successfully.');
 
             $sourceUrl   = $configData['source_url'];
             $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
@@ -172,12 +172,12 @@ class ConfigStream extends Command
                         'status'              => 1,
                     ]);
 
-                Log::channel('stream')->info('FFMPEG kill command updated successfully.');
+                Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG kill command updated successfully.');
             }
         }
 
         // Reload Nginx
-        exec('/usr/local/nginx/sbin/nginx -s reload');
-        Log::channel('stream')->info('Nginx configuration syntax check passed and Nginx reloaded successfully.');
+        exec('sudo /usr/local/nginx/sbin/nginx -s reload');
+        Log::channel('stream')->info($configData['stream_name'] . ': Nginx configuration syntax check passed and Nginx reloaded successfully.');
     }
 }
