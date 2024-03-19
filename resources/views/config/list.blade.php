@@ -35,13 +35,13 @@
 
             // Periodically reload every 5 seconds
             setInterval(function () {
-                $('#config-table').DataTable().ajax.reload();
+                $('#stream-table').DataTable().draw();
             }, 5000);
         });
 
         function streams() {
             $('#stream-table').DataTable({
-                processing: true,
+                processing: false,
                 serverSide: true,
                 ajax: '{{ route('config.list') }}',
                 columns: [
