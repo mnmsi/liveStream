@@ -159,6 +159,8 @@ class ConfigStream extends Command
             // Run ffmpeg command and get the PID
             exec($configData['ffmpeg_cmd']);
 
+            Log::channel('stream')->info('FFMPEG command executed successfully.');
+
             $sourceUrl   = $configData['source_url'];
             $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
 
@@ -169,6 +171,8 @@ class ConfigStream extends Command
                         'ffmpeg_kill_command' => $killCommand,
                         'status'              => 1,
                     ]);
+
+                Log::channel('stream')->info('FFMPEG kill command updated successfully.');
             }
         }
 
