@@ -54,8 +54,8 @@
                     {data: 'active_users', name: 'active_users'},
                     {data: 'incoming_bandwidth', name: 'incoming_bandwidth'},
                     {data: 'outgoing_bandwidth', name: 'outgoing_bandwidth'},
-                    {data: 'status', name: 'status'},
-                    {data: 'action', name: 'action'},
+                    {data: 'status', name: 'status', className: 'text-center'},
+                    {data: 'action', name: 'action', className: 'text-center'},
                 ]
             });
         }
