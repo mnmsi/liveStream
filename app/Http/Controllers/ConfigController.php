@@ -209,5 +209,11 @@ class ConfigController extends Controller
     public function destroy($id)
     {
         // Delete the config...
+        $config = Config::findOrFail($id);
+
+        // run the ffmpeg_kill_command
+        exec($config->ffmpeg_kill_command);
+
+        $config->delete();
     }
 }
