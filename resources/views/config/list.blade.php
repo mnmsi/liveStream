@@ -30,7 +30,7 @@
 @endsection
 @push('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             streams();
 
             // Periodically reload every 5 seconds
@@ -45,13 +45,17 @@
                 serverSide: true,
                 ajax: '{{ route('config.list') }}',
                 columns: [
-                    { data: 'id', name: 'id' },
-                    { data: 'info', name: 'info' },
-                    { data: 'active_users', name: 'active_users' },
-                    { data: 'incoming_bandwidth', name: 'incoming_bandwidth' },
-                    { data: 'outgoing_bandwidth', name: 'outgoing_bandwidth' },
-                    { data: 'status', name: 'status' },
-                    { data: 'action', name: 'action' },
+                    {
+                        data: 'id', name: 'id', render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {data: 'info', name: 'info'},
+                    {data: 'active_users', name: 'active_users'},
+                    {data: 'incoming_bandwidth', name: 'incoming_bandwidth'},
+                    {data: 'outgoing_bandwidth', name: 'outgoing_bandwidth'},
+                    {data: 'status', name: 'status'},
+                    {data: 'action', name: 'action'},
                 ]
             });
         }
