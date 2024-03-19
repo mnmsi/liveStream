@@ -54,13 +54,11 @@ class ConfigController extends Controller
 
                 // check hls directory for m3u8 files at m3u8_file_directory
                 $stop = '';
+                $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
                 if (file_exists($config->m3u8_file_directory)) {
                     // font awesome icon for play with link and red icon
                     $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
                     $stop  = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
-                }
-                else {
-                    $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
                 }
 
                 $action = "<div>
@@ -108,6 +106,8 @@ class ConfigController extends Controller
 
         // get the server ip address
         $serverIp = $request->server('SERVER_ADDR');
+
+        dd($serverIp, $request);
 
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($request->given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($request->given_name)));
