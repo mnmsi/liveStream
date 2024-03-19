@@ -8,8 +8,86 @@ use Illuminate\Support\Facades\Artisan;
 
 class ConfigController extends Controller
 {
-    public function list()
+    public function list(Request $request)
     {
+        if ($request->ajax()) {
+            $data = Config::latest();
+
+            // Filtering
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $data->where(function ($query) use ($searchValue) {
+                    $query->where('name', 'like', "%{$searchValue}%")
+                        ->orWhere('url', 'like', "%{$searchValue}%")
+                        ->orWhere('status', 'like', "%{$searchValue}%");
+                    // Add other fields as needed
+                });
+            }
+
+            // Get total records count
+            $totalRecords = $data->count();
+
+            // Paging
+            $start  = $request->start;
+            $length = $request->length;
+            $data->skip($start)->take($length);
+
+            // Get filtered records count
+            $filteredRecords = $data->count();
+
+            // Ordering
+            if ($request->order && count($request->order)) {
+                $orderBy  = $request->columns[$request->order[0]['column']]['data'];
+                $orderDir = $request->order[0]['dir'];
+                $data->orderBy($orderBy, $orderDir);
+            }
+
+            $configs = $data->get();
+
+            // take only needed fields, sl, info, active users, incoming bandwidth, outgoing bandwidth, status, action
+            $configs = $configs->map(function ($config) {
+
+                $info = "<div>
+                            <p style='font-weight: 1200;margin: 0;'>$config->given_name</p>
+                            <p style='margin: 0;font-size: 14px;'>$config->hls_url</p>
+                        </div>";
+
+                // check hls directory for m3u8 files at m3u8_file_directory
+                if (file_exists($config->m3u8_file_directory)) {
+                    // font awesome icon for play with link and red icon
+                    $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
+                }
+                else {
+                    $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
+                }
+
+                $action = "<div>
+                            <a href='" . route('config.show', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-eye' style='color: red;'></i></a>
+                            <a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i>
+                        </div>";
+
+                return [
+                    'id'                 => $config->id,
+                    'info'               => $info,
+                    'active_users'       => 0,
+                    'incoming_bandwidth' => '0 MB',
+                    'outgoing_bandwidth' => '0 MB',
+                    'status'             => $status,
+                    'action'             => $action,
+                ];
+            });
+
+            // Prepare response
+            $response = [
+                "draw"            => intval($request->draw),
+                "recordsTotal"    => $totalRecords,
+                "recordsFiltered" => $filteredRecords,
+                "data"            => $configs,
+            ];
+
+            return response()->json($response);
+        }
+
         return view('config.list', ['configs' => Config::all()]);
     }
 

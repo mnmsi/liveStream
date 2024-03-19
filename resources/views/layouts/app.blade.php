@@ -29,6 +29,9 @@
 
     <!-- Template Stylesheet -->
     <link href="{{asset('assets/css/style.css')}}" rel="stylesheet">
+
+    <!-- Jquery datatable Stylesheet -->
+    <link href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -56,6 +59,7 @@
 <!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
 <script src="{{asset('assets/lib/chart/chart.min.js')}}"></script>
 <script src="{{asset('assets/lib/easing/easing.min.js')}}"></script>
 <script src="{{asset('assets/lib/waypoints/waypoints.min.js')}}"></script>
@@ -66,6 +70,7 @@
 
 <!-- Template Javascript -->
 <script src="{{asset('assets/js/main.js')}}"></script>
-</body>
 
+@stack('scripts')
+</body>
 </html>
