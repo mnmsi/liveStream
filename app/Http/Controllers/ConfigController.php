@@ -53,9 +53,11 @@ class ConfigController extends Controller
                         </div>";
 
                 // check hls directory for m3u8 files at m3u8_file_directory
+                $stop = '';
                 if (file_exists($config->m3u8_file_directory)) {
                     // font awesome icon for play with link and red icon
                     $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
+                    $stop  = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
                 }
                 else {
                     $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
@@ -63,7 +65,7 @@ class ConfigController extends Controller
 
                 $action = "<div>
                             <a href='" . route('config.show', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-eye' style='color: red;'></i></a>
-                            <a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i>
+                            $stop
                         </div>";
 
                 return [
@@ -105,7 +107,7 @@ class ConfigController extends Controller
         ]);
 
         // get the server ip address
-        $serverIp = gethostbyname(gethostname());
+        $serverIp = $request->server('SERVER_ADDR');
 
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($request->given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($request->given_name)));
