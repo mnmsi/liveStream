@@ -32,12 +32,12 @@ class ConfigController extends Controller
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($request->given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($request->given_name)));
 
-        $rtmpAppName             = $streamName;
+        $rtmpAppName             = $givenName;
         $rtmpUrl                 = "rtmp://$serverIp/$givenName";
         $rtmpServerDirectory     = "/usr/local/nginx/conf/rtmp.d";
         $rtmpServerFileDirectory = "/usr/local/nginx/conf/rtmp.d/$streamName.conf";
 
-        $hlsServerName          = $streamName;
+        $hlsServerName          = $givenName;
         $hlsUrl                 = "http://$serverIp/$givenName/stream.m3u8";
         $hlsServerDirectory     = "/usr/local/nginx/conf/http.d";
         $hlsServerFileDirectory = "/usr/local/nginx/conf/http.d/$streamName.conf";
