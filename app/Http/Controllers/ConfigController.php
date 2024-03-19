@@ -105,9 +105,7 @@ class ConfigController extends Controller
         ]);
 
         // get the server ip address
-        $serverIp = $request->server('SERVER_ADDR');
-
-        dd($serverIp, $request);
+        $serverIp = file_get_contents('https://api.ipify.org');
 
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($request->given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($request->given_name)));
