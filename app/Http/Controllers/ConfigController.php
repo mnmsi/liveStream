@@ -54,12 +54,12 @@ class ConfigController extends Controller
                         </div>";
 
                 // check hls directory for m3u8 files at m3u8_file_directory
-                $stop = '';
+                $stop   = '';
                 $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
                 if (file_exists($config->m3u8_file_directory)) {
                     // font awesome icon for play with link and red icon
                     $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
-                    $stop  = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
+                    $stop   = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
                 }
 
                 $action = "<div>
@@ -70,12 +70,15 @@ class ConfigController extends Controller
                 // get active users count from redis
                 $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
 
+                // get bandwidth from log files
+                $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
+
                 return [
                     'id'                 => $config->id,
                     'info'               => $info,
                     'active_users'       => count($activeUsers),
-                    'incoming_bandwidth' => '0 MB',
-                    'outgoing_bandwidth' => '0 MB',
+                    'incoming_bandwidth' => $bandwidth['incoming_bandwidth'] . ' MB',
+                    'outgoing_bandwidth' => $bandwidth['outgoing_bandwidth'] . ' MB',
                     'status'             => $status,
                     'action'             => $action,
                 ];
@@ -217,5 +220,44 @@ class ConfigController extends Controller
         exec($config->ffmpeg_kill_command);
 
         $config->delete();
+    }
+
+    private function getBandwidth($logDir)
+    {
+        // Open the log file for reading
+        $logFile = fopen($logDir, 'r');
+
+        // Initialize variables to store incoming and outgoing bandwidth
+        $incomingBandwidth = 0;
+        $outgoingBandwidth = 0;
+
+        // Read the log file line by line
+        while ($line = fgets($logFile)) {
+            // Parse the line based on the log format
+            $logParts = explode('"', $line);
+
+            // Extract relevant information
+            $requestInfo   = explode(' ', $logParts[1]);
+            $requestMethod = $requestInfo[0];
+            $bytesSent     = intval($requestInfo[1]);
+
+            // Determine if the request is incoming or outgoing (you might need more sophisticated logic here)
+            if ($requestMethod === 'GET' || $requestMethod === 'HEAD') {
+                // Assuming incoming requests are GET or HEAD
+                $incomingBandwidth += $bytesSent;
+            }
+            else {
+                // Assuming outgoing requests are other HTTP methods
+                $outgoingBandwidth += $bytesSent;
+            }
+        }
+
+        // Close the log file
+        fclose($logFile);
+
+        return [
+            'incoming_bandwidth' => $incomingBandwidth / (1024 * 1024),
+            'outgoing_bandwidth' => $outgoingBandwidth / (1024 * 1024),
+        ];
     }
 }
