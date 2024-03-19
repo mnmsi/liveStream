@@ -27,10 +27,9 @@ class ConfigStream extends Command
      */
     public function handle()
     {
-        Log::channel('stream')->info($configData['stream_name'] . ': Configuring the stream...');
-
         // Access the passed data
         $configData = $this->argument('configData');
+        Log::channel('stream')->info($configData['stream_name'] . ': Configuring the stream...');
 
         // check m3u8 directory
         if (!file_exists($configData['m3u8_directory'])) {
