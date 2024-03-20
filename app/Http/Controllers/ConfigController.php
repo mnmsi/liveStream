@@ -115,8 +115,8 @@ class ConfigController extends Controller
     {
         // Validate the request...
         $request->validate([
-            'given_name' => 'required',
-            'source_url' => 'required',
+            'given_name' => 'required|string',
+            'source_url' => 'nullable|string',
         ]);
 
         // get the server ip address
@@ -149,7 +149,10 @@ class ConfigController extends Controller
         $errorLogDirectory     = "/usr/local/nginx/logs/$streamName" . "_error.log";
         $bandwidthLogDirectory = "/usr/local/nginx/logs/$streamName" . "_bw.log";
 
-        $ffmpegCmd = "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 10 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &";
+        $ffmpegCmd = null;
+        if ($sourceUrl) {
+            $ffmpegCmd = "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 10 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &";
+        }
 
         // Create a new config...
         $config = Config::create([

@@ -173,6 +173,14 @@ class ConfigStream extends Command
 
                 Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG kill command updated successfully.');
             }
+        } else {
+            // Update the config
+            $config = Config::find($configData['id'])
+                ->update([
+                    'status' => 1,
+                ]);
+
+            Log::channel('stream')->info($configData['stream_name'] . ': Config updated successfully.');
         }
 
         // Reload Nginx

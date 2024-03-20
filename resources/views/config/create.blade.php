@@ -17,7 +17,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="sourceUrl" class="form-label">Source Url</label>
+                            <label for="sourceUrl" class="form-label">Source Url <small>(if available)</small></label>
                             <input type="text" name="source_url" class="form-control" id="sourceUrl" placeholder="Enter source url">
                             @include('components.utils.form_field_alert', ['name' => 'source_url'])
                         </div>
