@@ -70,8 +70,16 @@ class ConfigController extends Controller
                 // get active users count from redis
                 $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
 
-                // get bandwidth from log files
-                $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
+                //check app is in local
+                if (!file_exists($config->bandwidth_log_directory)) {
+                    $bandwidth = [
+                        'incoming_bandwidth' => 0,
+                        'outgoing_bandwidth' => 0
+                    ];
+                } else {
+                    // get bandwidth from log files
+                    $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
+                }
 
                 return [
                     'id'                 => $config->id,
@@ -234,30 +242,18 @@ class ConfigController extends Controller
         // Read the log file line by line
         while ($line = fgets($logFile)) {
             // Parse the line based on the log format
-            $logParts = explode('"', $line);
+            $logParts = explode(' ', $line);
 
-            // Extract relevant information
-            $requestInfo   = explode(' ', $logParts[1]);
-            $requestMethod = $requestInfo[0];
-            $bytesSent     = intval($requestInfo[1]);
-
-            // Determine if the request is incoming or outgoing (you might need more sophisticated logic here)
-            if ($requestMethod === 'GET' || $requestMethod === 'HEAD') {
-                // Assuming incoming requests are GET or HEAD
-                $incomingBandwidth += $bytesSent;
-            }
-            else {
-                // Assuming outgoing requests are other HTTP methods
-                $outgoingBandwidth += $bytesSent;
-            }
+            $incomingBandwidth     += intval($logParts[24]);
+            $outgoingBandwidth     += intval($logParts[25]);
         }
 
         // Close the log file
         fclose($logFile);
 
         return [
-            'incoming_bandwidth' => $incomingBandwidth / (1024 * 1024),
-            'outgoing_bandwidth' => $outgoingBandwidth / (1024 * 1024),
+            'incoming_bandwidth' => round($incomingBandwidth / (1024 * 1024), 2),
+            'outgoing_bandwidth' => round($outgoingBandwidth / (1024 * 1024), 2)
         ];
     }
 }
