@@ -20,8 +20,8 @@ class CheckUserRegistration
     {
         // check database.sqlite file exists
         if (!file_exists(database_path('database.sqlite'))) {
-            // Create the database.sqlite file
-            exec('touch ' . database_path('database.sqlite'));
+            // Create the database.sqlite file with permission
+            touch(database_path('database.sqlite'));
         }
 
         // cehck database is empty
