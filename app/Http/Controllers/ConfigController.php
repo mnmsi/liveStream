@@ -27,8 +27,8 @@ class ConfigController extends Controller
             $data = $this->getConfigs($params);
 
             // Prepare response
+            $response         = $data;
             $response['draw'] = intval($request->draw);
-            $response         += $data;
 
             return response()->json($response);
         }
