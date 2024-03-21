@@ -43,6 +43,7 @@
             $('#stream-table').DataTable({
                 processing: false,
                 serverSide: true,
+                ordering: false,
                 ajax: '{{ route('config.list') }}',
                 columns: [
                     {
