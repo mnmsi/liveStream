@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
 
 class ConfigController extends Controller
@@ -56,14 +57,13 @@ class ConfigController extends Controller
                 // check hls directory for m3u8 files at m3u8_file_directory
                 $stop   = '';
                 $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
-                if (file_exists($config->m3u8_file_directory)) {
-                    // font awesome icon for play with link and red icon
+                if (count(File::glob("{$config->m3u8_directory}/*.m3u8")) > 0) {
                     $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
                     $stop   = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
                 }
 
                 $action = "<div>
-                            <a href='" . route('config.show', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-eye' style='color: red;'></i></a>
+                            <a href='" . route('config.details', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-eye' style='color: red;'></i></a>
                             $stop
                         </div>";
 
@@ -124,6 +124,7 @@ class ConfigController extends Controller
 
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($request->given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($request->given_name)));
+        $sourceUrl = $request->source_url;
 
         $rtmpAppName             = $givenName;
         $rtmpUrl                 = "rtmp://$serverIp/$givenName";
@@ -131,7 +132,13 @@ class ConfigController extends Controller
         $rtmpServerFileDirectory = "/usr/local/nginx/conf/rtmp.d/$streamName.conf";
 
         $hlsServerName          = $givenName;
-        $hlsUrl                 = "http://$serverIp/$givenName/stream.m3u8";
+
+        if ($sourceUrl) {
+            $hlsUrl                 = "http://$serverIp/$givenName/stream.m3u8";
+        } else {
+            $hlsUrl                 = "http://$serverIp/$givenName/index.m3u8";
+        }
+
         $hlsServerDirectory     = "/usr/local/nginx/conf/http.d";
         $hlsServerFileDirectory = "/usr/local/nginx/conf/http.d/$streamName.conf";
 
@@ -139,10 +146,14 @@ class ConfigController extends Controller
         $luaHlsFileDirectory  = "/usr/local/nginx/conf/lua.d/$streamName" . "_hls.lua";
         $luaStatFileDirectory = "/usr/local/nginx/conf/lua.d/$streamName" . "_stat.lua";
 
-        $sourceUrl = $request->source_url;
-
         $m3u8Directory     = "/tmp/$streamName";
-        $m3u8FileDirectory = "/tmp/$streamName/stream.m3u8";
+
+        if ($sourceUrl) {
+            $m3u8FileDirectory = "/tmp/$streamName/stream.m3u8";
+        } else {
+            $m3u8FileDirectory = "/tmp/$streamName/index.m3u8";
+        }
+
         $m3u8LogDirectory  = "/tmp/$streamName/ffmpeg.log";
 
         $accessLogDirectory    = "/usr/local/nginx/logs/$streamName" . "_access.log";
@@ -201,25 +212,9 @@ class ConfigController extends Controller
 
     }
 
-    public function show($id)
+    public function details($id)
     {
-        return view('config.show', ['config' => Config::findOrFail($id)]);
-    }
-
-    public function edit($id)
-    {
-        return view('config.edit', ['config' => Config::findOrFail($id)]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        // Validate the request...
-        $request->validate([
-            'name'  => 'required',
-            'email' => 'required|email',
-        ]);
-
-        // Update the config...
+        return view('config.details', ['config' => Config::findOrFail($id)]);
     }
 
     public function destroy($id)
@@ -230,7 +225,40 @@ class ConfigController extends Controller
         // run the ffmpeg_kill_command
         exec($config->ffmpeg_kill_command);
 
-        $config->delete();
+        // Delete associated files (excluding directories) for all except m3u8
+        $filesToDelete = [
+            $config->access_log_directory,
+            $config->error_log_directory,
+            $config->bandwidth_log_directory,
+            $config->lua_hls_file_directory,
+            $config->lua_stat_file_directory,
+            $config->rtmp_server_file_directory,
+            $config->hls_server_file_directory,
+        ];
+
+        foreach ($filesToDelete as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+
+        // Delete m3u8_directory
+        if (is_dir($config->m3u8_directory)) {
+            rmdir($config->m3u8_directory);
+        }
+
+        // Delete the configuration
+        $deleted = $config->delete();
+
+        if ($deleted) {
+            return redirect()
+                ->route('config.list')
+                ->with('success', 'Configuration and associated files deleted successfully!');
+        }
+
+        return redirect()
+            ->route('config.list')
+            ->with('error', 'Failed to delete configuration!');
     }
 
     private function getBandwidth($logDir)
