@@ -164,22 +164,16 @@ class ConfigStream extends Command
             $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
 
             if (!empty($ffmpegPid)) {
-                // Update the config
-                $config = Config::find($configData['id'])
-                    ->update([
-                        'ffmpeg_kill_command' => $killCommand,
-                        'status'              => 1,
-                    ]);
-
+                // Update status and ffmpeg kill command the config
+                $configData += [
+                    'ffmpeg_kill_command' => $killCommand,
+                    'status'              => 1,
+                ];
                 Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG kill command updated successfully.');
             }
         } else {
-            // Update the config
-            $config = Config::find($configData['id'])
-                ->update([
-                    'status' => 1,
-                ]);
-
+            // Update status the config
+            $configData['status'] = 1;
             Log::channel('stream')->info($configData['stream_name'] . ': Config updated successfully.');
         }
 
