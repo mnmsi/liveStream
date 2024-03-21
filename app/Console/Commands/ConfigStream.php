@@ -186,5 +186,13 @@ class ConfigStream extends Command
         // Reload Nginx
         exec('sudo /usr/local/nginx/sbin/nginx -s reload');
         Log::channel('stream')->info($configData['stream_name'] . ': Nginx configuration syntax check passed and Nginx reloaded successfully.');
+
+        // Create config
+        $config = Config::create($configData);
+        if ($config) {
+            Log::channel('stream')->info($configData['stream_name'] . ': Config created successfully.');
+        } else {
+            Log::channel('stream')->error($configData['stream_name'] . ': Config creation failed.');
+        }
     }
 }
