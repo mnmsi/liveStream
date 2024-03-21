@@ -167,8 +167,9 @@ trait ConfigTrait
         ]);
 
         if ($config) {
-            // Run config:stream command in the background
-            if (App::environment('production')) {
+            // Check application environment
+            if (request()->ip() != '127.0.0.1') {
+                // Run config:stream command in the background
                 Artisan::call('config:stream', ['configData' => $config->toArray()]);
             }
 
