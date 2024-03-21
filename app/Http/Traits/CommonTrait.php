@@ -26,8 +26,8 @@ trait CommonTrait
             // Parse the line based on the log format
             $logParts = explode(' ', $line);
 
-            $incomingBandwidth     += intval($logParts[24]);
-            $outgoingBandwidth     += intval($logParts[25]);
+            $incomingBandwidth     += !empty($logParts[24]) ? intval($logParts[24]) : 0;
+            $outgoingBandwidth     += !empty($logParts[25]) ? intval($logParts[25]) : 0;
         }
 
         // Close the log file
