@@ -40,6 +40,7 @@ trait ConfigTrait
 
             $info = "<div>
                             <p style='font-weight: 1200;margin: 0;'>$config->given_name</p>
+                            <p style='margin: 0;font-size: 14px;'>$config->rtmp_url</p>
                             <p style='margin: 0;font-size: 14px;'>$config->hls_url</p>
                         </div>";
 
@@ -98,12 +99,12 @@ trait ConfigTrait
             'stream_name'                => $streamName,
 
             'rtmp_app_name'              => $givenName,
-            'rtmp_url'                   => "rtmp://$serverIp/$givenName",
+            'rtmp_url'                   => "rtmp://$serverIp:1936/$givenName",
             'rtmp_server_directory'      => "/usr/local/nginx/conf/rtmp.d",
             'rtmp_server_file_directory' => "/usr/local/nginx/conf/rtmp.d/$streamName.conf",
 
             'hls_server_name'            => $givenName,
-            'hls_url'                    => $sourceUrl ? "http://$serverIp/$givenName/stream.m3u8" : "http://$serverIp/$givenName/index.m3u8",
+            'hls_url'                    => $sourceUrl ? "http://$serverIp:8081/$givenName/stream.m3u8" : "http://$serverIp:8081/$givenName/index.m3u8",
             'hls_server_directory'       => "/usr/local/nginx/conf/http.d",
             'hls_server_file_directory'  => "/usr/local/nginx/conf/http.d/$streamName.conf",
 
