@@ -162,7 +162,8 @@ trait ConfigTrait
 
         // Delete m3u8_directory
         if (is_dir($config->m3u8_directory)) {
-            rmdir($config->m3u8_directory);
+            exec("sudo rm -rf $config->m3u8_directory");
+            //rmdir($config->m3u8_directory);
         }
 
         // Delete the configuration and return the result
