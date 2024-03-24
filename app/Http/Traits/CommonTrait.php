@@ -38,4 +38,15 @@ trait CommonTrait
             'outgoing_bandwidth' => round($outgoingBandwidth / (1024 * 1024), 2)
         ];
     }
+
+    public function removeTrailingSlash($text)
+    {
+        // Check if the string ends with '/'
+        if (str_ends_with($text, '/')) {
+            // Remove the trailing '/'
+            return rtrim($text, '/');
+        } else {
+            return $text;
+        }
+    }
 }

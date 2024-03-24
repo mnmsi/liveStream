@@ -91,7 +91,7 @@ trait ConfigTrait
 
         $givenName  = preg_replace('/[^a-zA-Z0-9\/]/', '', trim($given_name));
         $streamName = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', trim($given_name)));
-        $sourceUrl  = $source_url;
+        $sourceUrl  = $this->removeTrailingSlash($source_url);
 
         $configData = [
             'given_name'                 => $givenName,
