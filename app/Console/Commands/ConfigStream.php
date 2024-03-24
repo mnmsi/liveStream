@@ -157,10 +157,6 @@ class ConfigStream extends Command
         exec('sudo /usr/local/nginx/sbin/nginx -s reload');
         Log::channel('stream')->info($configData['stream_name'] . ': Nginx configuration syntax check passed and Nginx reloaded successfully.');
 
-        // Set permission to the /tmp directory
-        exec('sudo chmod 1777 /tmp');
-
-
         $ffmpegCmdOutput = [];
         // check source url exists
         if (!empty($configData['source_url'])) {
