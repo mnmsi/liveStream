@@ -40,7 +40,7 @@ trait ConfigTrait
 
             $info = "<div>
                             <p style='font-weight: 1200;margin: 0;'>$config->given_name</p>
-                            <p style='margin: 0;font-size: 14px;'>$config->rtmp_url</p>
+                            <p style='margin: 0;font-size: 14px;'>$config->rtmp_url'{STREAM_KEY}.m3u8'</p>
                             <p style='margin: 0;font-size: 14px;'>$config->hls_url</p>
                         </div>";
 
