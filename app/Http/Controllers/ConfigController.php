@@ -45,8 +45,8 @@ class ConfigController extends Controller
     {
         // Validate the request...
         $validatedData = $request->validate([
-            'given_name' => 'required|string',
-            'source_url' => 'nullable|string',
+            'given_name' => 'required|string|unique:configs,given_name',
+            'source_url' => 'nullable|string|unique:configs,source_url',
         ]);
 
         $config = $this->storeConfig($validatedData);
