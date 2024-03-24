@@ -38,9 +38,11 @@ trait ConfigTrait
         // take only needed fields, sl, info, active users, incoming bandwidth, outgoing bandwidth, status, action
         $configs = $configs->map(function ($config) {
 
+            $rtmpShow = empty($config->source_url) ? "<p style='margin: 0;font-size: 14px;'>$config->rtmp_url</p>" : '';
+
             $info = "<div>
                             <p style='font-weight: 1200;margin: 0;'>$config->given_name</p>
-                            <p style='margin: 0;font-size: 14px;'>$config->rtmp_url</p>
+                            $rtmpShow
                             <p style='margin: 0;font-size: 14px;'>$config->hls_url</p>
                         </div>";
 
@@ -95,34 +97,34 @@ trait ConfigTrait
         $sourceUrl  = $this->removeTrailingSlash($source_url);
 
         $configData = [
-            'given_name'                 => $givenName,
-            'stream_name'                => $streamName,
+            'given_name'  => $givenName,
+            'stream_name' => $streamName,
 
             'rtmp_app_name'              => $givenName,
             'rtmp_url'                   => "rtmp://$serverIp:1936/$givenName",
             'rtmp_server_directory'      => "/usr/local/nginx/conf/rtmp.d",
             'rtmp_server_file_directory' => "/usr/local/nginx/conf/rtmp.d/$streamName.conf",
 
-            'hls_server_name'            => $givenName,
-            'hls_url'                    => $sourceUrl ? "http://$serverIp:8081/$givenName/stream.m3u8" : "http://$serverIp:8081/$givenName/index.m3u8",
-            'hls_server_directory'       => "/usr/local/nginx/conf/http.d",
-            'hls_server_file_directory'  => "/usr/local/nginx/conf/http.d/$streamName.conf",
+            'hls_server_name'           => $givenName,
+            'hls_url'                   => $sourceUrl ? "http://$serverIp:8081/$givenName/stream.m3u8" : "http://$serverIp:8081/$givenName/index.m3u8",
+            'hls_server_directory'      => "/usr/local/nginx/conf/http.d",
+            'hls_server_file_directory' => "/usr/local/nginx/conf/http.d/$streamName.conf",
 
-            'lua_directory'              => "/usr/local/nginx/conf/lua.d",
-            'lua_hls_file_directory'     => "/usr/local/nginx/conf/lua.d/$streamName" . "_hls.lua",
-            'lua_stat_file_directory'    => "/usr/local/nginx/conf/lua.d/$streamName" . "_stat.lua",
+            'lua_directory'           => "/usr/local/nginx/conf/lua.d",
+            'lua_hls_file_directory'  => "/usr/local/nginx/conf/lua.d/$streamName" . "_hls.lua",
+            'lua_stat_file_directory' => "/usr/local/nginx/conf/lua.d/$streamName" . "_stat.lua",
 
-            'source_url'                 => $source_url,
+            'source_url' => $source_url,
 
-            'm3u8_directory'             => "/tmp/$streamName",
-            'm3u8_file_directory'        => $sourceUrl ? "/tmp/$streamName/stream.m3u8" : "/tmp/$streamName/index.m3u8",
-            'm3u8_log_directory'         => "/tmp/$streamName/ffmpeg.log",
+            'm3u8_directory'      => "/tmp/$streamName",
+            'm3u8_file_directory' => $sourceUrl ? "/tmp/$streamName/stream.m3u8" : "/tmp/$streamName/index.m3u8",
+            'm3u8_log_directory'  => "/tmp/$streamName/ffmpeg.log",
 
-            'access_log_directory'       => "/usr/local/nginx/logs/$streamName" . "_access.log",
-            'error_log_directory'        => "/usr/local/nginx/logs/$streamName" . "_error.log",
-            'bandwidth_log_directory'    => "/usr/local/nginx/logs/$streamName" . "_bw.log",
+            'access_log_directory'    => "/usr/local/nginx/logs/$streamName" . "_access.log",
+            'error_log_directory'     => "/usr/local/nginx/logs/$streamName" . "_error.log",
+            'bandwidth_log_directory' => "/usr/local/nginx/logs/$streamName" . "_bw.log",
 
-            'ffmpeg_cmd'                 => $sourceUrl ? "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 10 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &" : null,
+            'ffmpeg_cmd' => $sourceUrl ? "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 10 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &" : null,
         ];
 
 
@@ -140,7 +142,7 @@ trait ConfigTrait
         $config = Config::findOrFail($id);
 
         // check run the ffmpeg_kill_command
-        if ($config->ffmpeg_kill_command){
+        if ($config->ffmpeg_kill_command) {
             exec($config->ffmpeg_kill_command);
         }
 
