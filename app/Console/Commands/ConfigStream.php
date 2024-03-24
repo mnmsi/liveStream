@@ -158,7 +158,10 @@ class ConfigStream extends Command
         // check source url exists
         if (!empty($configData['source_url'])) {
             // Run ffmpeg command and get the PID
-            exec($configData['ffmpeg_cmd']);
+
+            exec($configData['ffmpeg_cmd'], $output, $return);
+
+            dd($output);
 
             Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG command executed successfully.');
 
