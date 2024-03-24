@@ -35,8 +35,6 @@ class ConfigStream extends Command
         if (!file_exists($configData['m3u8_directory'])) {
             mkdir($configData['m3u8_directory']);
             chmod($configData['m3u8_directory'], 0755);
-            exec('sudo chmod +x ' . $configData['m3u8_directory']);
-            exec('sudo chown -R www-data:www-data ' . $configData['m3u8_directory']);
         }
 
         Log::channel('stream')->info($configData['stream_name'] . ': M3U8 directory created successfully.');
@@ -155,6 +153,14 @@ class ConfigStream extends Command
         // Check Nginx configuration syntax
         //exec('/usr/local/nginx/sbin/nginx -t');
 
+        // Reload Nginx
+        exec('sudo /usr/local/nginx/sbin/nginx -s reload');
+        Log::channel('stream')->info($configData['stream_name'] . ': Nginx configuration syntax check passed and Nginx reloaded successfully.');
+
+        // Set permission to the /tmp directory
+        exec('sudo chmod 1777 /tmp');
+
+
         $ffmpegCmdOutput = [];
         // check source url exists
         if (!empty($configData['source_url'])) {
@@ -186,10 +192,6 @@ class ConfigStream extends Command
             $configData['status'] = 1;
             Log::channel('stream')->info($configData['stream_name'] . ': Config updated successfully.');
         }
-
-        // Reload Nginx
-        exec('sudo /usr/local/nginx/sbin/nginx -s reload');
-        Log::channel('stream')->info($configData['stream_name'] . ': Nginx configuration syntax check passed and Nginx reloaded successfully.');
 
         // Create config
         $config = Config::create($configData);
