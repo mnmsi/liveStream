@@ -155,27 +155,32 @@ class ConfigStream extends Command
         // Check Nginx configuration syntax
         //exec('/usr/local/nginx/sbin/nginx -t');
 
+        $ffmpegCmdOutput = [];
         // check source url exists
         if (!empty($configData['source_url'])) {
             // Run ffmpeg command and get the PID
 
-            exec($configData['ffmpeg_cmd'], $output, $return);
+            exec($configData['ffmpeg_cmd'], $ffmpegCmdOutput, $return);
 
-            dd($output);
+            if ($return !== 0) {
 
-            Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG command executed successfully.');
+                Log::channel('stream')->error($configData['stream_name'] . ': FFMPEG command execution failed.');
 
-            $sourceUrl   = $configData['source_url'];
-            $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
+            } else {
+                Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG command executed successfully.');
 
-            if (!empty($ffmpegPid)) {
+                $sourceUrl   = $configData['source_url'];
+                $killCommand = "kill $(pgrep -f 'ffmpeg.*-i $sourceUrl')";
+
                 // Update status and ffmpeg kill command the config
                 $configData += [
                     'ffmpeg_kill_command' => $killCommand,
                     'status'              => 1,
                 ];
+
                 Log::channel('stream')->info($configData['stream_name'] . ': FFMPEG kill command updated successfully.');
             }
+
         } else {
             // Update status the config
             $configData['status'] = 1;
