@@ -35,6 +35,8 @@ class ConfigStream extends Command
         if (!file_exists($configData['m3u8_directory'])) {
             mkdir($configData['m3u8_directory']);
             chmod($configData['m3u8_directory'], 0755);
+            exec('chmod +x ' . $configData['m3u8_directory']);
+            exec('sudo chown -R www-data:www-data ' . $configData['m3u8_directory']);
         }
 
         Log::channel('stream')->info($configData['stream_name'] . ': M3U8 directory created successfully.');
