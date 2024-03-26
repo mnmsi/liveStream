@@ -13,6 +13,12 @@ trait ConfigTrait
 {
     private function getConfigs(array $params): array
     {
+        // Calculate start time as current time
+        $endTime = Carbon::now();
+
+        // Calculate end time by subtracting 5 seconds from the start time
+        $startTime = $endTime->copy()->subSeconds(5);
+
         // Extract params
         extract($params);
 
@@ -37,7 +43,7 @@ trait ConfigTrait
         $configs = $data->get();
 
         // take only needed fields, sl, info, active users, incoming bandwidth, outgoing bandwidth, status, action
-        $configs = $configs->map(function ($config) {
+        $configs = $configs->map(function ($config) use ($startTime, $endTime){
 
             $rtmpShow = empty($config->source_url) ? "<li>$config->rtmp_url</li>" : '';
             $sourceUrlDt = !empty($config->source_url)
@@ -72,12 +78,6 @@ trait ConfigTrait
 
             // get active users count from redis
             $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
-
-            // Calculate start time as current time
-            $endTime = Carbon::now();
-
-            // Calculate end time by subtracting 5 seconds from the start time
-            $startTime = $endTime->copy()->subSeconds(5);
 
             // get bandwidth from log files
             $bandwidth = $this->getBandwidth($config->bandwidth_log_directory, $startTime, $endTime);
