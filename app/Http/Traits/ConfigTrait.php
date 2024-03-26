@@ -38,12 +38,24 @@ trait ConfigTrait
         // take only needed fields, sl, info, active users, incoming bandwidth, outgoing bandwidth, status, action
         $configs = $configs->map(function ($config) {
 
-            $rtmpShow = empty($config->source_url) ? "<p style='margin: 0;font-size: 14px;'>$config->rtmp_url</p>" : '';
+            $rtmpShow = empty($config->source_url) ? "<li>$config->rtmp_url</li>" : '';
+            $sourceUrlDt = !empty($config->source_url)
+                            ?  "<dt>Source Url</dt>
+                                <ol>
+                                    <li>$config->source_url</li>
+                                </ol>"
+                            : '';
 
             $info = "<div>
-                            <p style='font-weight: 1200;margin: 0;'>$config->given_name</p>
-                            $rtmpShow
-                            <p style='margin: 0;font-size: 14px;'>$config->hls_url</p>
+                            <p style='font-weight: 800;margin: 0;font-size: 25px;'>$config->given_name</p>
+                            <dl>
+                                $sourceUrlDt
+                                <dt>Output Urls</dt>
+                                <ol>
+                                    $rtmpShow
+                                    <li>$config->hls_url</li>
+                                </ol>
+                            </dl>
                         </div>";
 
             // check hls directory for m3u8 files at m3u8_file_directory

@@ -33,9 +33,11 @@
         $(document).ready(function () {
             streams();
 
-            // Periodically reload every 5 seconds
+            // Periodically reload every 5 seconds if it is in localhost
             setInterval(function () {
-                $('#stream-table').DataTable().draw();
+                if (window.location.hostname !== 'localhost' || window.location.hostname !== '127.0.0.1') {
+                    $('#stream-table').DataTable().draw();
+                }
             }, 5000);
         });
 

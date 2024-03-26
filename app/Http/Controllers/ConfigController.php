@@ -6,9 +6,6 @@ use App\Http\Traits\CommonTrait;
 use App\Http\Traits\ConfigTrait;
 use App\Models\Config;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Redis;
 
 class ConfigController extends Controller
 {
