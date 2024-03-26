@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use App\Models\Config;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -72,8 +73,14 @@ trait ConfigTrait
             // get active users count from redis
             $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
 
+            // Calculate start time as current time
+            $endTime = Carbon::now();
+
+            // Calculate end time by subtracting 5 seconds from the start time
+            $startTime = $endTime->copy()->subSeconds(5);
+
             // get bandwidth from log files
-            $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
+            $bandwidth = $this->getBandwidth($config->bandwidth_log_directory, $startTime, $endTime);
 
             return [
                 'id'                 => $config->id,

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 
 trait CommonTrait
 {
-    public function getBandwidth($logDir): array
+    public function getBandwidth($logDir, $startTime, $endTime): array
     {
         // Check if the log file exists
         if (!file_exists($logDir)) {
@@ -23,12 +23,6 @@ trait CommonTrait
         $incomingBandwidth = 0;
         $outgoingBandwidth = 0;
 
-        // Calculate start time as current time
-        $startTime = Carbon::now();
-
-        // Calculate end time by subtracting 5 seconds from the start time
-        $endTime = $startTime->copy()->subSeconds(5);
-
         // Read the log file line by line
         while ($line = fgets($logFile)) {
             // Parse the line based on the log format
@@ -41,7 +35,7 @@ trait CommonTrait
             $logDateTime = Carbon::createFromFormat('d/M/Y:H:i:s', $logTimestamp);
 
             // Check if the log line falls within the specified time frame
-            if ($logDateTime->between($endTime, $startTime)) {
+            if ($logDateTime->between($startTime, $endTime)) {
                 $incomingBandwidth += !empty($logParts[24]) ? intval($logParts[24]) : 0;
                 $outgoingBandwidth += !empty($logParts[25]) ? intval($logParts[25]) : 0;
             }
