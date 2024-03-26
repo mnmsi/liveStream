@@ -6,15 +6,13 @@ use Carbon\Carbon;
 
 trait CommonTrait
 {
-    private $prevInBW, $prevOutBW = 0;
-
     public function getBandwidth($logDir, $startTime, $endTime): array
     {
         // Check if the log file exists
         if (!file_exists($logDir)) {
             return [
                 'incoming_bandwidth' => 0,
-                'outgoing_bandwidth' => 0,
+                'outgoing_bandwidth' => 0
             ];
         }
 
@@ -47,8 +45,8 @@ trait CommonTrait
         fclose($logFile);
 
         return [
-            'incoming_bandwidth' => round(($incomingBandwidth ?? $this->prevInBW) / (1024 * 1024), 2),
-            'outgoing_bandwidth' => round(($outgoingBandwidth ?? $this->prevOutBW) / (1024 * 1024), 2),
+            'incoming_bandwidth' => round($incomingBandwidth / (1024 * 1024), 2),
+            'outgoing_bandwidth' => round($outgoingBandwidth / (1024 * 1024), 2)
         ];
     }
 
@@ -58,8 +56,7 @@ trait CommonTrait
         if (str_ends_with($text, '/')) {
             // Remove the trailing '/'
             return rtrim($text, '/');
-        }
-        else {
+        } else {
             return $text;
         }
     }
