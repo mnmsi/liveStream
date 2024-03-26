@@ -67,7 +67,7 @@ trait ConfigTrait
             }
 
             $action = "<div>
-                            <a href='" . route('config.details', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-eye' style='color: red;'></i></a>
+                            <a href='" . route('config.edit', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-pencil' style='color: red;'></i></a>
                             $stop
                         </div>";
 

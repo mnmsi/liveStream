@@ -35,11 +35,22 @@
 
             // Periodically reload every 5 seconds if it is in localhost
             setInterval(function () {
-                if (window.location.hostname !== 'localhost' || window.location.hostname !== '127.0.0.1') {
+                if (checkAppState()) {
                     $('#stream-table').DataTable().draw();
                 }
             }, 5000);
         });
+
+        function checkAppState() {
+            switch (window.location.hostname) {
+                case 'localhost':
+                    return false;
+                case '127.0.0.1':
+                    return false;
+                default:
+                    return true;
+            }
+        }
 
         function streams() {
             $('#stream-table').DataTable({
