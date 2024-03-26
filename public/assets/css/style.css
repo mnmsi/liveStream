@@ -287,3 +287,7 @@
     background: var(--dark);
     border-color: var(--primary);
 }
+
+td {
+    vertical-align: middle !important;
+}
