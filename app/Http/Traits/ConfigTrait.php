@@ -148,6 +148,14 @@ trait ConfigTrait
         return true;
     }
 
+    private function updateConfig($id, array $params): bool
+    {
+        //Destroy the config
+        $this->destroyConfig($id);
+
+        return $this->storeConfig($params);
+    }
+
     private function destroyConfig($id)
     {
         // Find the configuration

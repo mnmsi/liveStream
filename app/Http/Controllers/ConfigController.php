@@ -59,9 +59,30 @@ class ConfigController extends Controller
             ->with('error', 'Config creation failed!');
     }
 
-    public function details($id)
+    public function edit($id)
     {
-        return view('config.details', ['config' => Config::findOrFail($id)]);
+        return view('config.edit', ['config' => Config::findOrFail($id)]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validate the request...
+        $validatedData = $request->validate([
+            'given_name' => 'required|string|unique:configs,given_name,' . $id,
+            'source_url' => 'nullable|string|unique:configs,source_url,' . $id,
+        ]);
+
+        $config = $this->updateConfig($id, $validatedData);
+
+        if ($config) {
+            return redirect()
+                ->route('config.list')
+                ->with('success', 'Config updated successfully!');
+        }
+
+        return redirect()
+            ->route('config.edit', $id)
+            ->with('error', 'Config update failed!');
     }
 
     public function destroy($id)
