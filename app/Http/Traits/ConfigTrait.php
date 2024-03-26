@@ -118,7 +118,7 @@ trait ConfigTrait
             'rtmp_server_file_directory' => "/usr/local/nginx/conf/rtmp.d/$streamName.conf",
 
             'hls_server_name'           => $givenName,
-            'hls_url'                   => $sourceUrl ? "http://$serverIp:8081/$givenName/stream.m3u8" : "http://$serverIp:8081/$givenName/index.m3u8",
+            'hls_url'                   => $sourceUrl ? "http://$serverIp:8880/$givenName/stream.m3u8" : "http://$serverIp:8880/$givenName/index.m3u8",
             'hls_server_directory'      => "/usr/local/nginx/conf/http.d",
             'hls_server_file_directory' => "/usr/local/nginx/conf/http.d/$streamName.conf",
 
