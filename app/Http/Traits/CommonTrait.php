@@ -8,8 +8,6 @@ trait CommonTrait
 {
     public function getBandwidth($logDir): array
     {
-        $logDir = 'C:\Users\saifu\Documents\ipl_bw.log';
-
         // Check if the log file exists
         if (!file_exists($logDir)) {
             return [
