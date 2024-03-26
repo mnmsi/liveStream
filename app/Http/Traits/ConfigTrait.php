@@ -59,16 +59,14 @@ trait ConfigTrait
                         </div>";
 
             // check hls directory for m3u8 files at m3u8_file_directory
-            $stop   = '';
             $status = "<img src='" . asset('assets/img/Double Ring-1s-200px.gif') . "' alt='loading' height=30px width=30px />";
             if (count(File::glob("{$config->m3u8_directory}/*.m3u8")) > 0) {
                 $status = "<a href='" . $config->hls_url . "' target='_blank'><i class='fa fa-play' style='color: red;'></i></a>";
-                $stop   = "<a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>";
             }
 
             $action = "<div>
                             <a href='" . route('config.edit', $config->id) . "' style='margin-right: 5px;'><i class='fa fa-edit' style='color: red;'></i></a>
-                            $stop
+                            <a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>
                         </div>";
 
             // get active users count from redis
