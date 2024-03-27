@@ -17,7 +17,7 @@ trait ConfigTrait
         $endTime = Carbon::now();
 
         // Calculate end time by subtracting 5 seconds from the start time
-        $startTime = $endTime->copy()->subSeconds(5);
+        $startTime = $endTime->copy()->subSeconds(15);
 
         // Extract params
         extract($params);

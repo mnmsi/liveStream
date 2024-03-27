@@ -44,6 +44,9 @@ trait CommonTrait
         // Close the log file
         fclose($logFile);
 
+        //$incomingBandwidth = $incomingBandwidth / 15;
+        //$outgoingBandwidth = $outgoingBandwidth / 15;
+
         return [
             'incoming_bandwidth' => round($incomingBandwidth / (1024 * 1024), 2),
             'outgoing_bandwidth' => round($outgoingBandwidth / (1024 * 1024), 2)
