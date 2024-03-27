@@ -13,12 +13,6 @@ trait ConfigTrait
 {
     private function getConfigs(array $params): array
     {
-        // Calculate start time as current time
-        $endTime = Carbon::now();
-
-        // Calculate end time by subtracting 5 seconds from the start time
-        $startTime = $endTime->copy()->subSeconds(15);
-
         // Extract params
         extract($params);
 
@@ -43,15 +37,15 @@ trait ConfigTrait
         $configs = $data->get();
 
         // take only needed fields, sl, info, active users, incoming bandwidth, outgoing bandwidth, status, action
-        $configs = $configs->map(function ($config) use ($startTime, $endTime){
+        $configs = $configs->map(function ($config) {
 
-            $rtmpShow = empty($config->source_url) ? "<li>$config->rtmp_url</li>" : '';
+            $rtmpShow    = empty($config->source_url) ? "<li>$config->rtmp_url</li>" : '';
             $sourceUrlDt = !empty($config->source_url)
-                            ?  "<dt>Source Url</dt>
-                                <ol>
-                                    <li>$config->source_url</li>
-                                </ol>"
-                            : '';
+                ? "<dt>Source Url</dt>
+                        <ol>
+                            <li>$config->source_url</li>
+                        </ol>"
+                : '';
 
             $info = "<div>
                             <p style='font-weight: 800;margin: 0;font-size: 25px;'>$config->given_name</p>
@@ -80,7 +74,7 @@ trait ConfigTrait
             $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
 
             // get bandwidth from log files
-            $bandwidth = $this->getBandwidth($config->bandwidth_log_directory, $startTime, $endTime);
+            $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
 
             return [
                 'id'                 => $config->id,
