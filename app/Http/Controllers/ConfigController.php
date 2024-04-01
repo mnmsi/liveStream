@@ -6,6 +6,7 @@ use App\Http\Traits\CommonTrait;
 use App\Http\Traits\ConfigTrait;
 use App\Models\Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class ConfigController extends Controller
 {
@@ -30,7 +31,9 @@ class ConfigController extends Controller
             return response()->json($response);
         }
 
-        return view('config.list');
+        $totalUsers = Redis::connection('default')->get('total_users');
+
+        return view('config.list', compact('totalUsers'));
     }
 
     public function create()
