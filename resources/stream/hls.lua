@@ -35,7 +35,12 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
     -- Extract country from IP address
     local geoip_country = ngx.req.get_headers()["X-GeoIP-Country"]
 
+    -- Log geoip_country in log file
+    ngx.log(ngx.INFO, "Country: 123123", geoip_country)
+
     if geoip_country then
+        red:set("countries:", geoip_country)
+        red:set("!!STREAM_NAME!!_countries:", geoip_country)
         local country_key = "country_users:" .. geoip_country
         red:hincrby(country_key, geoip_country, 1) -- Track total users per country
     end
