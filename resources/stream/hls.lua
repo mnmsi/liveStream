@@ -46,7 +46,7 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
     end
 end
 
-red:setex("!!STREAM_NAME!!_session_tokens:" .. session_token, 12, ngx.var.remote_addr)
+red:setex("!!STREAM_NAME!!_session_tokens:" .. session_token, 5, ngx.var.remote_addr)
 
 -- Store user-specific in/out bandwidth
 local total_bytes_in_key = "!!STREAM_NAME!!_total_bytes_in"
