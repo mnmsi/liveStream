@@ -25,12 +25,12 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
     ngx.header['Set-Cookie'] = 'session_token=' .. session_token .. '; Path=/; HttpOnly'
 
     -- Check if the total_users key exists, if not, set it to 0
-    if red:get(total_users) == ngx.null then
-        red:set(total_users, 0)
+    if red:get("total_users") == ngx.null then
+        red:set("total_users", 0)
     end
 
-    -- Increment the total_users key
-    red:incr(total_users)
+    -- Increment the "total_users" key
+    red:incr("total_users")
 
     -- Extract country from IP address
     local geoip_country = ngx.req.get_headers()["X-GeoIP-Country"]
