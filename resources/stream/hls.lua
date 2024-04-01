@@ -23,6 +23,22 @@ local session_token = ngx.var.cookie_session_token
 if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_token) == 0 then
     session_token = ngx.md5(ngx.var.remote_addr .. ngx.now())
     ngx.header['Set-Cookie'] = 'session_token=' .. session_token .. '; Path=/; HttpOnly'
+
+    -- Check if the total_users key exists, if not, set it to 0
+    if red:get(total_users) == ngx.null then
+        red:set(total_users, 0)
+    end
+
+    -- Increment the total_users key
+    red:incr(total_users)
+
+    -- Extract country from IP address
+    local geoip_country = ngx.req.get_headers()["X-GeoIP-Country"]
+
+    if geoip_country then
+        local country_key = "country_users:" .. geoip_country
+        red:hincrby(country_key, geoip_country, 1) -- Track total users per country
+    end
 end
 
 red:setex("!!STREAM_NAME!!_session_tokens:" .. session_token, 12, ngx.var.remote_addr)
