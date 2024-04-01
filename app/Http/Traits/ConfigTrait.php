@@ -135,7 +135,7 @@ trait ConfigTrait
             'error_log_directory'     => "/usr/local/nginx/logs/$streamName" . "_error.log",
             'bandwidth_log_directory' => "/usr/local/nginx/logs/$streamName" . "_bw.log",
 
-            'ffmpeg_cmd' => $sourceUrl ? "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 10 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &" : null,
+            'ffmpeg_cmd' => $sourceUrl ? "nohup ffmpeg -i '$sourceUrl' -c:v copy -c:a copy -hls_time 4 -hls_list_size 6 -hls_wrap 10 -f hls /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &" : null,
 
             //'ffmpeg_cmd' => $sourceUrl ? "nohup ffmpeg -i '$sourceUrl' -c:v libx264 -preset veryfast -crf 23 -c:a aac -b:a 128k -hls_time 2 -hls_list_size 4 -hls_wrap 10 /tmp/$streamName/stream.m3u8 > /tmp/$streamName/ffmpeg.log 2>&1 &" : null,
         ];
