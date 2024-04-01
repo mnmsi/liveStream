@@ -112,7 +112,7 @@ trait ConfigTrait
             'stream_name' => $streamName,
 
             'rtmp_app_name'              => $givenName,
-            'rtmp_url'                   => "rtmp://$serverIp:1935/$givenName",
+            'rtmp_url'                   => "rtmp://$serverIp/$givenName",
             'rtmp_server_directory'      => "/usr/local/nginx/conf/rtmp.d",
             'rtmp_server_file_directory' => "/usr/local/nginx/conf/rtmp.d/$streamName.conf",
 
