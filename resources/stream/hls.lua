@@ -36,7 +36,7 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
     local geoip_country = ngx.req.get_headers()["X-GeoIP-Country"]
 
     -- Log geoip_country in log file
-    ngx.log(ngx.INFO, "Country: 123123", geoip_country)
+    ngx.log(ngx.ERR, "Country: 123123", geoip_country)
 
     if geoip_country then
         red:set("countries:", geoip_country)
