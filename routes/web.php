@@ -24,7 +24,8 @@ Route::middleware('checkUserRegistration')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
         Route::controller(ConfigController::class)->prefix('config')->as('config.')->group(function () {
-            Route::get('list', 'list')->name('list');
+            Route::get('list', 'listView')->name('list');
+            Route::post('getData', 'getData')->name('getData');
             Route::get('create', 'create')->name('create');
             Route::post('store', 'store')->name('store');
             Route::get('edit/{id}', 'edit')->name('edit');

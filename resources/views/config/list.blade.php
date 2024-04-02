@@ -57,7 +57,10 @@
                 processing: false,
                 serverSide: true,
                 ordering: false,
-                ajax: '{{ route('config.list') }}',
+                ajax: {
+                    type: 'POST',
+                    url: '{{ route('config.getData') }}'
+                },
                 columns: [
                     {
                         data: 'id', name: 'id', render: function (data, type, row, meta) {

@@ -11,26 +11,26 @@ class ConfigController extends Controller
 {
     use ConfigTrait, CommonTrait;
 
-    public function list(Request $request)
+    public function listView(Request $request)
     {
-        if ($request->ajax()) {
-
-            $params = [
-                'start'       => $request->start,
-                'length'      => $request->length,
-                'searchValue' => $request->search['value'],
-            ];
-
-            $data = $this->getConfigs($params);
-
-            // Prepare response
-            $response         = $data;
-            $response['draw'] = intval($request->draw);
-
-            return response()->json($response);
-        }
-
         return view('config.list');
+    }
+
+    public function getData(Request $request)
+    {
+        $params = [
+            'start'       => $request->start,
+            'length'      => $request->length,
+            'searchValue' => $request->search['value'],
+        ];
+
+        $data = $this->getConfigs($params);
+
+        // Prepare response
+        $response         = $data;
+        $response['draw'] = intval($request->draw);
+
+        return response()->json($response);
     }
 
     public function create()
