@@ -16,7 +16,10 @@ class DashboardController extends Controller
         $countriesKeys = Redis::connection('default')->keys('"countries:*');
 
         // Get the values of the countries
-        $countries = Redis::connection('default')->mget($countriesKeys);
+        $countries = [];
+        foreach ($countriesKeys as $key) {
+            $countries[] = Redis::connection('default')->get($key);
+        }
 
         // Get the total number of countries
         $totalCountries = count($countries);
