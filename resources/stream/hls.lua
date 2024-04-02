@@ -31,6 +31,27 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
 
     -- Increment the "total_users" key
     red:incr("total_users")
+
+    -- Extract country from IP address
+    local geoip_country = ngx.var.geoip_country
+
+    if geoip_country then
+
+        -- Check if the countries key exists, if not, set it to 0
+        if red:get("countries_users:" .. geoip_country) == ngx.null then
+            red:set("countries_users:" .. geoip_country, 0)
+        end
+
+        -- Check if the countries_users key exists, if not, set it to 0
+        if red:get("!!STREAM_NAME!!_countries_users:" .. geoip_country) == ngx.null then
+            red:set("!!STREAM_NAME!!_countries_users:" .. geoip_country, 0)
+        end
+
+        red:set("countries:" .. geoip_country, 1)
+        red:incr("countries_users:" .. geoip_country)
+        red:set("!!STREAM_NAME!!_countries:" .. geoip_country, 1)
+        red:incr("!!STREAM_NAME!!_countries_users:" .. geoip_country)
+    end
 end
 
 red:setex("!!STREAM_NAME!!_session_tokens:" .. session_token, 5, ngx.var.remote_addr)

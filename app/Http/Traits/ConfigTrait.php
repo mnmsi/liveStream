@@ -189,6 +189,21 @@ trait ConfigTrait
             File::deleteDirectory($config->m3u8_directory);
         }
 
+        // Redis keys to delete
+        $redisKeys = [
+            $config->stream_name . "_session_tokens:*",
+            $config->stream_name . "_countries:*",
+            $config->stream_name . "_countries_users:*",
+            $config->stream_name . "_total_bytes_in",
+            $config->stream_name . "_total_bytes_out",
+        ];
+
+        // Loop through the keys and delete them
+        foreach ($redisKeys as $key) {
+            $keys = Redis::connection('default')->keys($key);
+            Redis::connection('default')->del($keys);
+        }
+
         // Delete the configuration and return the result
         return $config->delete();
     }
