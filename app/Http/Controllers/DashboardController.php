@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $totalUsers = Redis::connection('default')->get('total_users');
 
         // Get the countries from the Redis cache
-        $countriesKeys = Redis::connection('default')->keys('"countries:*');
+        $countriesKeys = Redis::connection('default')->keys('countries:*');
 
         // Get the values of the countries
         $countries = [];
