@@ -76,14 +76,26 @@ trait ConfigTrait
             // get bandwidth from log files
             $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
 
+            $bandwidthDiv = "<div>
+                                <p style='margin: 0;'>Incoming: " . $bandwidth['incoming_bandwidth'] . " MB</p>
+                                <p style='margin: 0;'>Outgoing: " . $bandwidth['outgoing_bandwidth'] . " MB</p>
+                            </div>";
+
+            // Get the countries from the Redis cache
+            $countriesKeys = Redis::connection('default')->keys($config->stream_name . '_countries:*');
+
+            $statDiv = "<div>
+                                <p style='margin: 0;'>Users: " . count($activeUsers) . "</p>
+                                <p style='margin: 0;'>Coutries: " . count($countriesKeys) . "</p>
+                            </div>";
+
             return [
-                'id'                 => $config->id,
-                'info'               => $info,
-                'active_users'       => count($activeUsers),
-                'incoming_bandwidth' => $bandwidth['incoming_bandwidth'] . ' MB',
-                'outgoing_bandwidth' => $bandwidth['outgoing_bandwidth'] . ' MB',
-                'status'             => $status,
-                'action'             => $action,
+                'id'        => $config->id,
+                'info'      => $info,
+                'stats'     => $statDiv,
+                'bandwidth' => $bandwidthDiv,
+                'status'    => $status,
+                'action'    => $action,
             ];
         });
 
