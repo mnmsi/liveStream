@@ -213,7 +213,9 @@ trait ConfigTrait
         // Loop through the keys and delete them
         foreach ($redisKeys as $key) {
             $keys = Redis::connection('default')->keys($key);
-            Redis::connection('default')->del($keys);
+            foreach ($keys as $k) {
+                Redis::connection('default')->del($k);
+            }
         }
 
         // Delete the configuration and return the result
