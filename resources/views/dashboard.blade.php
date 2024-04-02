@@ -16,8 +16,8 @@
                 <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-bar fa-3x text-primary"></i>
                     <div class="ms-3">
-                        <p class="mb-2">Total Sale</p>
-                        <h6 class="mb-0">$1234</h6>
+                        <p class="mb-2">Total Countries</p>
+                        <h6 class="mb-0">{{$totalCountries}}</h6>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,8 @@
                         <a href="">Show All</a>
                     </div>
                     <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt=""
+                             style="width: 40px; height: 40px;">
                         <div class="w-100 ms-3">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-0">Jhon Doe</h6>
@@ -164,7 +165,8 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt=""
+                             style="width: 40px; height: 40px;">
                         <div class="w-100 ms-3">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-0">Jhon Doe</h6>
@@ -174,7 +176,8 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt=""
+                             style="width: 40px; height: 40px;">
                         <div class="w-100 ms-3">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-0">Jhon Doe</h6>
@@ -184,7 +187,8 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center pt-3">
-                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt=""
+                             style="width: 40px; height: 40px;">
                         <div class="w-100 ms-3">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-0">Jhon Doe</h6>
