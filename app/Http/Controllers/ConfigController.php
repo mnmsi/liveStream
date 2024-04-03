@@ -14,12 +14,12 @@ class ConfigController extends Controller
 
     public function listView(Request $request)
     {
-        $url = route('config.getData');
-        if (@file_get_contents($url) === false) {
-            $url = Str::replace('http://', 'https://', $url);
+        $configsUrl = route('config.getData');
+        if (@file_get_contents($configsUrl) === false) {
+            $configsUrl = Str::replace('http://', 'https://', $configsUrl);
         }
 
-        return view('config.list', compact('url'));
+        return view('config.list', compact('configsUrl'));
     }
 
     public function getData(Request $request)

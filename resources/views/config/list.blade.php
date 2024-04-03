@@ -58,7 +58,7 @@
                 ordering: false,
                 ajax: {
                     type: 'POST',
-                    url: '{{ route('config.getData') }}'
+                    url: '{{ $configsUrl }}'
                 },
                 columns: [
                     {
