@@ -6,6 +6,7 @@ use App\Http\Traits\CommonTrait;
 use App\Http\Traits\ConfigTrait;
 use App\Models\Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ConfigController extends Controller
 {
@@ -13,7 +14,12 @@ class ConfigController extends Controller
 
     public function listView(Request $request)
     {
-        return view('config.list');
+        $url = route('config.getData');
+        if (@file_get_contents($url) === false) {
+            $url = Str::replace('http://', 'https://', $url);
+        }
+
+        return view('config.list', compact('url'));
     }
 
     public function getData(Request $request)

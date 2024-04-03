@@ -25,7 +25,7 @@ class DashboardController extends Controller
         $totalCountries = count($countries);
 
         return view('dashboard', [
-            'totalUsers'     => $totalUsers,
+            'totalUsers'     => $totalUsers ?? 0,
             'countries'      => $countries,
             'totalCountries' => $totalCountries,
         ]);
