@@ -26,7 +26,7 @@
     <!-- Sale & Revenue End -->
 
     <!-- Chart Start -->
-    @if($totalCountries)
+    @if($countries)
         <div class="container-fluid pt-4 px-4 mb-4">
             <div class="row g-4">
                 <div class="col-sm-12 col-xl-6">
