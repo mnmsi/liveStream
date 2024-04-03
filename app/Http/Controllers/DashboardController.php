@@ -9,16 +9,20 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
+        $redis = Redis::connection('default');
+
         // Get the total number of users
-        $totalUsers = Redis::connection('default')->get('total_users');
+        $totalUsers = $redis->get('total_users');
 
         // Get the countries from the Redis cache
-        $countriesKeys = Redis::connection('default')->keys('countries:*');
+        $countriesKeys = $redis->keys('countries:*');
 
         // Get the values of the countries
         $countries = [];
         foreach ($countriesKeys as $key) {
-            $countries[] = Redis::connection('default')->get($key);
+            $country = $redis->get($key);
+            $countryUsers = $redis->get("countries_users:$country");
+            $countries[$country] = $countryUsers;
         }
 
         // Get the total number of countries
@@ -26,8 +30,9 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'totalUsers'     => $totalUsers ?? 0,
-            'countries'      => $countries,
             'totalCountries' => $totalCountries,
+            'countries'      => array_keys($countries),
+            'countriesUsers' => array_values($countries),
         ]);
     }
 }
