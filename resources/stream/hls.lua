@@ -47,9 +47,9 @@ if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_
             red:set("!!STREAM_NAME!!_countries_users:" .. geoip_country, 0)
         end
 
-        red:set("countries:" .. geoip_country, 1)
+        red:set("countries:" .. geoip_country, geoip_country)
         red:incr("countries_users:" .. geoip_country)
-        red:set("!!STREAM_NAME!!_countries:" .. geoip_country, 1)
+        red:set("!!STREAM_NAME!!_countries:" .. geoip_country, geoip_country)
         red:incr("!!STREAM_NAME!!_countries_users:" .. geoip_country)
     end
 end
