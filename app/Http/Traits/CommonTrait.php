@@ -19,8 +19,8 @@ trait CommonTrait
         // Calculate start time as current time
         $endTime = Carbon::now();
 
-        // Calculate end time by subtracting 5 seconds from the start time
-        $startTime = $endTime->copy()->subSeconds(10);
+        // Calculate end time by subtracting 12 seconds from the start time
+        $startTime = $endTime->copy()->subSeconds(12);
 
         // Open the log file for reading
         $logFile = fopen($logDir, 'r');
