@@ -7,7 +7,7 @@
                 <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-line fa-3x text-primary"></i>
                     <div class="ms-3">
-                        <p class="mb-2">Today Users</p>
+                        <p class="mb-2">Total Users</p>
                         <h6 class="mb-0">{{$totalUsers}}</h6>
                     </div>
                 </div>
