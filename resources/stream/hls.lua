@@ -2,14 +2,14 @@ local sqlite3 = require("lsqlite3")
 local db = sqlite3.open("/usr/local/nginx/html/admin/database/database.sqlite")
 
 -- Extract variables
+local stream_name = "!!STREAM_NAME!!"
 local remote_addr = ngx.var.remote_addr
 local session_token = ngx.var.cookie_session_token
 local country_iso_code = ngx.var.geoip_country_iso_code
 local country_name = ngx.var.geoip_country_name
 local user_agent = ngx.var.http_user_agent
-local incoming_bandwidth = ngx.var.request_length
-local outgoing_bandwidth = ngx.var.bytes_sent
-local stream_name = "!!STREAM_NAME!!"
+local incoming_bandwidth = ngx.var.incoming_bandwidth
+local outgoing_bandwidth = ngx.var.outgoing_bandwidth
 
 -- Function to increment user count for a country
 local function increment_country_user_count(country_code, country)
@@ -53,6 +53,7 @@ if result == sqlite3.ROW then
 end
 stmt_check:finalize()
 
+
 -- If the token is not provided or is invalid, generate a new one
 if not session_token or sessionCount == 0 then
     session_token = ngx.md5(remote_addr .. ngx.now())
@@ -73,11 +74,12 @@ if not session_token or sessionCount == 0 then
 end
 
 -- Insert bandwidth data into the database
--- local stmt_bandwidth = db:prepare("INSERT INTO bandwidth (stream_name, ip_address, incoming_bandwidth, outgoing_bandwidth) VALUES (?, ?, ?, ?);")
--- stmt_bandwidth:bind_values(stream_name, remote_addr, incoming_bandwidth, outgoing_bandwidth)
--- stmt_bandwidth:step()
--- stmt_bandwidth:finalize()
+local stmt_bandwidth = db:prepare("INSERT INTO bandwidths (stream_name, ip_address, incoming_bandwidth, outgoing_bandwidth) VALUES (?, ?, ?, ?);")
+stmt_bandwidth:bind_values(stream_name, remote_addr, incoming_bandwidth, outgoing_bandwidth)
+stmt_bandwidth:step()
+stmt_bandwidth:finalize()
 
 -- Close the SQLite connection
 db:close()
+
 
