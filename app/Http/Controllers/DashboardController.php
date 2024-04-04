@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
         // Get the values of the countries
         $countries = CountryStat::get()
-            ->pluck('count', 'country')
+            ->pluck('total_visits', 'country_name')
             ->toArray();
 
         // Get the total number of countries
