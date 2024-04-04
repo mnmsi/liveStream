@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Models\Bandwidth;
 use App\Models\Config;
 use App\Models\CountryStat;
 use App\Models\Session;
@@ -78,21 +79,34 @@ trait ConfigTrait
                 ->count();
 
             // get countries from country_stats
-            $totalCountries = CountryStat::where('stream_name', $config->stream_name)
-                ->count();
+            $totalCountries = CountryStat::where('stream_name', $config->stream_name)->count();
 
-            // get bandwidth from log files
-            $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
+            // get bandwidth from bandwidth table within 12 seconds and sum incoming and outgoing bandwidth
+            $bandwidth = Bandwidth::where('stream_name', $config->stream_name)
+                ->where('created_at', '>=', Carbon::now()->subSeconds(12))
+                ->selectRaw('sum(incoming_bandwidth) as incoming_bandwidth, sum(outgoing_bandwidth) as outgoing_bandwidth')
+                ->first();
+
+            // Incoming and outgoing bandwidth convert to MB
+            if ($bandwidth) {
+                $bandwidth->incoming_bandwidth = round($bandwidth->incoming_bandwidth / (1024 * 1024), 2);
+                $bandwidth->outgoing_bandwidth = round($bandwidth->outgoing_bandwidth / (1024 * 1024), 2);
+            } else {
+                $bandwidth = (object) [
+                    'incoming_bandwidth' => 0,
+                    'outgoing_bandwidth' => 0
+                ];
+            }
 
             $bandwidthDiv = "<div>
-                                <p style='margin: 0;'>Incoming: " . $bandwidth['incoming_bandwidth'] . " MB</p>
-                                <p style='margin: 0;'>Outgoing: " . $bandwidth['outgoing_bandwidth'] . " MB</p>
+                                <p style='margin: 0;'>Incoming: " . $bandwidth->incoming_bandwidth . " MB</p>
+                                <p style='margin: 0;'>Outgoing: " . $bandwidth->outgoing_bandwidth . " MB</p>
                             </div>";
 
             $statDiv = "<div>
-                                <p style='margin: 0;'>Users: " . $totalActiveSessions . "</p>
-                                <p style='margin: 0;'>Coutries: " . count($totalCountries) . "</p>
-                            </div>";
+                            <p style='margin: 0;'>Users: " . $totalActiveSessions . "</p>
+                            <p style='margin: 0;'>Coutries: " . $totalCountries . "</p>
+                        </div>";
 
             return [
                 'id'        => $config->id,
