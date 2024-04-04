@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use App\Models\Config;
+use App\Models\Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
@@ -70,8 +71,10 @@ trait ConfigTrait
                             <a href='" . route('config.destroy', $config->id) . "'><i class='fa fa-stop' style='color: red;'></i></a>
                         </div>";
 
-            // get active users count from redis
-            $activeUsers = Redis::connection('default')->keys("{$config->stream_name}_session_tokens:*");
+            // Get active sessions within 12 seconds
+            $activeUsers = Session::where('stream_name', $config->stream_name)
+                ->where('updated_at', '>=', Carbon::now()->subSeconds(12))
+                ->get();
 
             // get bandwidth from log files
             $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);

@@ -44,33 +44,66 @@ local function increment_country_user_count(country_code, country)
     end
 end
 
-local stmt_check = db:prepare("SELECT COUNT(*) FROM sessions WHERE stream_name = ? AND token = ?")
-stmt_check:bind_values(stream_name, session_token)
-local result = stmt_check:step()
+-- Define the time window (in seconds)
+local time_window = 12
+
+-- Prepare and execute the SQL query to select the session token and its creation time
+local stmt_session = db:prepare("SELECT token, updated_at FROM sessions WHERE stream_name = ? AND token = ?")
+stmt_session:bind_values(stream_name, session_token)
+local result = stmt_session:step()
+
+-- Initialize sessionCount and the token's creation time
 local sessionCount = 0
+local updated_at = nil
+
+-- Check if the query returned a row
 if result == sqlite3.ROW then
-    sessionCount = stmt_check:get_value(0)
+    sessionCount = 1
+    -- Retrieve the token's creation time
+    updated_at = tonumber(stmt_session:get_value(1))
 end
-stmt_check:finalize()
 
+-- Finalize the prepared statement
+stmt_session:finalize()
 
--- If the token is not provided or is invalid, generate a new one
-if not session_token or sessionCount == 0 then
+-- If the session token doesn't exist or is older than the time window, generate a new token
+if not session_token or sessionCount == 0 or (not updated_at or (os.time() - updated_at > time_window)) then
+
+    -- If the token exists but is older than the time window, delete it from the database
+    if sessionCount == 1 then
+        local stmt_delete = db:prepare("DELETE FROM sessions WHERE stream_name = ? AND token = ?")
+        stmt_delete:bind_values(stream_name, session_token)
+        stmt_delete:step()
+        stmt_delete:finalize()
+    end
+
+    -- Generate a new session token
     session_token = ngx.md5(remote_addr .. ngx.now())
 
-    -- Insert new session token into database
-    local stmt = db:prepare("INSERT INTO sessions (stream_name, ip_address, user_agent, token) VALUES (?, ?, ?, ?);")
-    stmt:bind_values(stream_name, remote_addr, user_agent, session_token)  -- Removed the extra comma here
-    stmt:step()
-    stmt:finalize()
+    -- Insert the new session token into the database
+    local stmt_insert = db:prepare("INSERT INTO sessions (stream_name, ip_address, user_agent, token) VALUES (?, ?, ?, ?);")
+    stmt_insert:bind_values(stream_name, remote_addr, user_agent, session_token)
+    stmt_insert:step()
+    stmt_insert:finalize()
 
-	-- Increment user count for country
-	if country_iso_code  then
-		increment_country_user_count(country_iso_code, country_name)
-	end
+    -- Increment user count for country
+    if country_iso_code then
+        increment_country_user_count(country_iso_code, country_name)
+    end
 
     -- Set session token cookie
     ngx.header['Set-Cookie'] = 'session_token=' .. session_token .. '; Path=/; HttpOnly'
+
+else
+    -- Token exists and is within the time window, update it with a new one
+    local new_session_token = ngx.md5(remote_addr .. ngx.now())
+    local stmt_update = db:prepare("UPDATE sessions SET token = ? WHERE stream_name = ? AND token = ?")
+    stmt_update:bind_values(new_session_token, stream_name, session_token)
+    stmt_update:step()
+    stmt_update:finalize()
+
+    -- Update the session token with the new one
+    session_token = new_session_token
 end
 
 -- Insert bandwidth data into the database
@@ -81,5 +114,3 @@ stmt_bandwidth:finalize()
 
 -- Close the SQLite connection
 db:close()
-
-
