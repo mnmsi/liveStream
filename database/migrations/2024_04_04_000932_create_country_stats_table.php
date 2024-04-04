@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('country_stats', function (Blueprint $table) {
             $table->id();
             $table->string('stream_name');
-            $table->string('country_code', 2)->unique();
+            $table->string('country_code', 2);
             $table->string('country_name');
             $table->unsignedBigInteger('total_visits')->default(0);
             $table->timestamp('created_at')->useCurrent();
