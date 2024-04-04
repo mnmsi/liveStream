@@ -1,82 +1,83 @@
-local redis = require "resty.redis"
-local red = redis:new()
+local sqlite3 = require("lsqlite3")
+local db = sqlite3.open("/usr/local/nginx/html/admin/database/database.sqlite")
 
--- Connect to the Redis server
-local ok, err = red:connect("127.0.0.1", 6379)
-if not ok then
-    ngx.log(ngx.ERR, "Failed to connect to Redis: ", err)
-    ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
-end
-
+-- Extract variables
 local remote_addr = ngx.var.remote_addr
+local session_token = ngx.var.cookie_session_token
+local country_iso_code = ngx.var.geoip_country_iso_code
+local country_name = ngx.var.geoip_country_name
+local user_agent = ngx.var.http_user_agent
+local incoming_bandwidth = ngx.var.request_length
+local outgoing_bandwidth = ngx.var.bytes_sent
+local stream_name = "!!STREAM_NAME!!"
 
--- Check if remote_addr is available
-if not remote_addr then
-    ngx.status = 400
-    ngx.say("Bad Request: remote_addr not available")
-    ngx.exit(ngx.HTTP_BAD_REQUEST)
+-- Function to increment user count for a country
+local function increment_country_user_count(country_code, country)
+    -- Check if the country exists in the database
+    local stmt_check = db:prepare("SELECT COUNT(*) FROM country_stats WHERE stream_name = ? AND country_code = ?")
+    stmt_check:bind_values(stream_name, country_code)
+
+    -- Execute the prepared statement
+    local result_check = stmt_check:step()
+
+    -- Extract the count value from the result set
+    local count = 0
+    if result_check == sqlite3.ROW then
+        count = stmt_check:get_value(0)
+    end
+
+    -- Finalize the prepared statement to release resources
+    stmt_check:finalize()
+
+    if count > 0 then
+        -- If country exists, increment total visits
+        local stmt_update = db:prepare("UPDATE country_stats SET total_visits = total_visits + 1 WHERE stream_name = ? AND country_code = ?")
+        stmt_update:bind_values(stream_name, country_code)
+        stmt_update:step()
+        stmt_update:finalize()
+    else
+        -- If country doesn't exist, insert a new record
+        local stmt_insert = db:prepare("INSERT INTO country_stats (stream_name, country_code, country_name, total_visits) VALUES (?, ?, ?, 1);")
+        stmt_insert:bind_values(stream_name, country_code, country)
+        stmt_insert:step()
+        stmt_insert:finalize()
+    end
 end
 
-local session_token = ngx.var.cookie_session_token
+local stmt_check = db:prepare("SELECT COUNT(*) FROM sessions WHERE stream_name = ? AND token = ?")
+stmt_check:bind_values(stream_name, session_token)
+local result = stmt_check:step()
+local sessionCount = 0
+if result == sqlite3.ROW then
+    sessionCount = stmt_check:get_value(0)
+end
+stmt_check:finalize()
 
 -- If the token is not provided or is invalid, generate a new one
-if not session_token or red:exists("!!STREAM_NAME!!_session_tokens:" .. session_token) == 0 then
-    session_token = ngx.md5(ngx.var.remote_addr .. ngx.now())
+if not session_token or sessionCount == 0 then
+    session_token = ngx.md5(remote_addr .. ngx.now())
+
+    -- Insert new session token into database
+    local stmt = db:prepare("INSERT INTO sessions (stream_name, ip_address, user_agent, token) VALUES (?, ?, ?, ?);")
+    stmt:bind_values(stream_name, remote_addr, user_agent, session_token)  -- Removed the extra comma here
+    stmt:step()
+    stmt:finalize()
+
+	-- Increment user count for country
+	if country_iso_code  then
+		increment_country_user_count(country_iso_code, country_name)
+	end
+
+    -- Set session token cookie
     ngx.header['Set-Cookie'] = 'session_token=' .. session_token .. '; Path=/; HttpOnly'
-
-    -- Check if the total_users key exists, if not, set it to 0
-    if red:get("total_users") == ngx.null then
-        red:set("total_users", 0)
-    end
-
-    -- Increment the "total_users" key
-    red:incr("total_users")
-
-    -- Extract country from IP address
-    local geoip_country = ngx.var.geoip_country
-
-    if geoip_country then
-
-        -- Check if the countries key exists, if not, set it to 0
-        if red:get("countries_users:" .. geoip_country) == ngx.null then
-            red:set("countries_users:" .. geoip_country, 0)
-        end
-
-        -- Check if the countries_users key exists, if not, set it to 0
-        if red:get("!!STREAM_NAME!!_countries_users:" .. geoip_country) == ngx.null then
-            red:set("!!STREAM_NAME!!_countries_users:" .. geoip_country, 0)
-        end
-
-        red:set("countries:" .. geoip_country, geoip_country)
-        red:incr("countries_users:" .. geoip_country)
-        red:set("!!STREAM_NAME!!_countries:" .. geoip_country, geoip_country)
-        red:incr("!!STREAM_NAME!!_countries_users:" .. geoip_country)
-    end
 end
 
-red:setex("!!STREAM_NAME!!_session_tokens:" .. session_token, 5, ngx.var.remote_addr)
+-- Insert bandwidth data into the database
+-- local stmt_bandwidth = db:prepare("INSERT INTO bandwidth (stream_name, ip_address, incoming_bandwidth, outgoing_bandwidth) VALUES (?, ?, ?, ?);")
+-- stmt_bandwidth:bind_values(stream_name, remote_addr, incoming_bandwidth, outgoing_bandwidth)
+-- stmt_bandwidth:step()
+-- stmt_bandwidth:finalize()
 
--- Store user-specific in/out bandwidth
-local total_bytes_in_key = "!!STREAM_NAME!!_total_bytes_in"
-local total_bytes_out_key = "!!STREAM_NAME!!_total_bytes_out"
+-- Close the SQLite connection
+db:close()
 
--- Check if keys exist, if not, set them to 0
-if red:get(total_bytes_in_key) == ngx.null then
-    red:set(total_bytes_in_key, 0)
-end
-
-if red:get(total_bytes_out_key) == ngx.null then
-    red:set(total_bytes_out_key, 0)
-end
-
-local bytes_in = ngx.var.request_length
-local bytes_out = ngx.var.bytes_sent
-
-red:incrby(total_bytes_in_key, bytes_in)
-red:incrby(total_bytes_out_key, bytes_out)
-
--- Close the connection to Redis
-local ok, err = red:set_keepalive(10000, 100)
-if not ok then
-    ngx.log(ngx.ERR, "Failed to set Redis keepalive: ", err)
-end
