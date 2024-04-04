@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('country_name');
             $table->unsignedBigInteger('total_visits')->default(0);
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

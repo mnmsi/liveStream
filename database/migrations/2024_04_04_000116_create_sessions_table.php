@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->string('token')->unique();
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
