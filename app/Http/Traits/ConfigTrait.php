@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use App\Models\Config;
+use App\Models\CountryStat;
 use App\Models\Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
@@ -72,9 +73,13 @@ trait ConfigTrait
                         </div>";
 
             // Get active sessions within 12 seconds
-            $activeUsers = Session::where('stream_name', $config->stream_name)
+            $totalActiveSessions = Session::where('stream_name', $config->stream_name)
                 ->where('updated_at', '>=', Carbon::now()->subSeconds(12))
-                ->get();
+                ->count();
+
+            // get countries from country_stats
+            $totalCountries = CountryStat::where('stream_name', $config->stream_name)
+                ->count();
 
             // get bandwidth from log files
             $bandwidth = $this->getBandwidth($config->bandwidth_log_directory);
@@ -84,12 +89,9 @@ trait ConfigTrait
                                 <p style='margin: 0;'>Outgoing: " . $bandwidth['outgoing_bandwidth'] . " MB</p>
                             </div>";
 
-            // Get the countries from the Redis cache
-            $countriesKeys = Redis::connection('default')->keys($config->stream_name . '_countries:*');
-
             $statDiv = "<div>
-                                <p style='margin: 0;'>Users: " . count($activeUsers) . "</p>
-                                <p style='margin: 0;'>Coutries: " . count($countriesKeys) . "</p>
+                                <p style='margin: 0;'>Users: " . $totalActiveSessions . "</p>
+                                <p style='margin: 0;'>Coutries: " . count($totalCountries) . "</p>
                             </div>";
 
             return [
